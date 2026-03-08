@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Ngày 8/3 - Fixed 3D</title>
+    <style>
+        :root {
+            --primary-pink: #ff4d79;
+            --soft-pink: #ffb3c6;
+            --bg-color: #fdf2f4;
+            --book-width: 320px;
+            --book-height: 480px;
+            --speed: 1.6s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            perspective: 2500px;
+        }
+
+        .book-container {
+            width: var(--book-width);
+            height: var(--book-height);
+            position: relative;
+            cursor: pointer;
+            transition: transform var(--speed) ease-in-out;
+            transform-style: preserve-3d;
+        }
+
+        .book-container.open {
+            transform: translateX(50%);
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform-origin: left;
+            transition: transform var(--speed) cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            border-radius: 2px 10px 10px 2px;
+            /* Đã bỏ overflow: hidden để tránh mất chữ 3D */
+        }
+
+        /* BÌA SÁCH */
+        .cover-leaf {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            transform-style: preserve-3d;
+            transform-origin: left;
+            transition: transform var(--speed) cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .book-container.open .cover-leaf {
+            transform: rotateY(-180deg);
+            z-index: 5; /* Hạ z-index xuống khi mở để trang nội dung hiển thị rõ */
+        }
+
+        .cover-front, .cover-inside {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cover-front {
+            background: linear-gradient(135deg, #ff4d79 0%, #ff85a2 100%);
+            z-index: 2;
+            color: white;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .cover-inside {
+            background: #ffffff;
+            transform: rotateY(180deg);
+            z-index: 1;
+            border: 1px solid #f0f0f0;
+        }
+
+        .cover-inside::after {
+            content: "";
+            width: 85%;
+            height: 90%;
+            border: 1px dashed var(--soft-pink);
+            border-radius: 8px;
+        }
+
+        /* TRANG NỘI DUNG */
+        .inner-page {
+            background: #fff;
+            z-index: 1;
+            padding: 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 5px 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Pop-up hiệu ứng */
+        .pop-up-content {
+            transform-style: preserve-3d;
+            width: 100%;
+        }
+
+        .flower-3d {
+            font-size: 100px;
+            filter: drop-shadow(15px 25px 15px rgba(0,0,0,0.15));
+            transform: translateZ(0) scale(0.6);
+            transition: transform var(--speed) 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .book-container.open .flower-3d {
+            transform: translateZ(100px) scale(1) rotateX(10deg);
+        }
+
+        .text-3d {
+            color: var(--primary-pink);
+            transition: opacity 0.8s ease-out 0.5s, transform 0.8s ease-out 0.5s;
+            opacity: 0;
+            transform: translateZ(0) translateY(20px);
+        }
+
+        .book-container.open .text-3d {
+            opacity: 1;
+            transform: translateZ(60px) translateY(0);
+        }
+
+        /* Dialog lơ lửng */
+        #dialog {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            color: var(--primary-pink);
+            font-weight: bold;
+            z-index: 20;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="book-container" id="book" onclick="toggleBook()">
+        <div id="dialog">Nhấn để mở quà nhé! ✨</div>
+        
+        <div class="cover-leaf">
+            <div class="cover-front">
+                <span style="font-size: 80px;">🎁</span>
+                <h2 style="padding: 0 20px; text-align: center; margin-top: 20px;">Gửi Người Phụ Nữ Tuyệt Vời</h2>
+                <p style="font-style: italic; opacity: 0.8;">(Bấm vào đây)</p>
+            </div>
+            <div class="cover-inside"></div>
+        </div>
+
+        <div class="page inner-page">
+            <div class="pop-up-content">
+                <div class="flower-3d">💐</div>
+                <div class="text-3d">
+                    <h2 style="margin: 0; font-size: 28px;">Happy Women's Day!</h2>
+                    <p style="color: #666; font-size: 16px; line-height: 1.6; margin-top: 15px;">
+                        Chúc bạn một ngày 8/3 rạng rỡ, <br>
+                        ngập tràn niềm vui và luôn là đóa hoa <br>
+                        xinh đẹp nhất!
+                    </p>
+                    <div style="font-size: 30px; margin-top: 10px;">❤️</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Thêm thẻ audio với id và link nhạc của bạn -->
+    <!-- Bạn có thể thay link mp3 này bằng link nhạc của bạn -->
+    <audio id="background-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <script>
+        let isOpen = false;
+        function toggleBook() {
+            // 2. Lấy các element cần điều khiển
+            const book = document.getElementById('book');
+            const dialog = document.getElementById('dialog');
+            const music = document.getElementById('background-music');
+            
+            if (!isOpen) {
+                book.classList.add('open');
+                dialog.classList.add('hidden');
+                isOpen = true;
+                music.play(); // Phát nhạc
+
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 150,
+                        spread: 120,
+                        origin: { y: 0.6 },
+                        colors: ['#ff4d79', '#ffb3c6', '#ffffff']
+                    });
+                }, 500);
+
+            } else {
+                book.classList.remove('open');
+                music.pause(); // Dừng nhạc
+                music.currentTime = 0; // Tua lại từ đầu
+                setTimeout(() => { 
+                    if(!isOpen) dialog.classList.remove('hidden'); 
+                }, 1600);
+                isOpen = false;
+            }
+        }
+    </script>
+</body>
+</html>
